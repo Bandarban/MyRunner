@@ -214,6 +214,7 @@ class Enemy(pygame.sprite.Sprite):
 
     def update(self):
         self.position = (self.position[0]-10, self.position[1])
+        #idk
         if self.rect.left < -50:
             self.kill()
 
