@@ -54,6 +54,7 @@ class Menu(GameState):
                 if event.key == K_RETURN or event.key == K_SPACE:
                     if Menu.menu_state["Start"]:
                         State.set_state(Game)
+
                     else:
                         exit(0)
             elif event.type == QUIT:
@@ -87,6 +88,7 @@ class State:
     @staticmethod
     def set_state(state):
         State.current_state = state
+        State.current_state.init()
 
     @staticmethod
     def update():
@@ -102,16 +104,24 @@ class State:
 class Game(GameState):
     @staticmethod
     def init():
-        game_background = ImgObj("game_bg.png", State.width, State.height)
+        Game.game_background = ImgObj("img/game_bg.png", State.width, State.height)
+        Game.all_sprites = []
+        Game.hero = Player
+        Game.enemy = Enemy
+        Game.all_sprites.append((Game.hero, Game.hero.grounded))
+        Game.all_sprites.append((Game.enemy, Game.enemy.position))
 
     @staticmethod
-    def update(self):
-        pass
+    def update():
+        Game.player.update()
+        Game.enemy.update()
 
     @staticmethod
-    def get_sprite_group(self):
-        pass
+    def get_sprite_group():
+        return Game.all_sprites
 
+
+"""
 
 class Screen:
     width = 800
@@ -120,6 +130,8 @@ class Screen:
 
     def set_screen(self, width, height):
         self.screen = pygame.display.set_mode((width, height))
+
+"""
 
 
 def main():
@@ -130,14 +142,31 @@ def main():
         State.render()
 
 
-class Player(pygame.sprite.Sprite):
-    def __init__(self):
-        super(Player, self).__init__()
-        self.image = pygame.image.load('pepa.png')
-        self.image = pygame.transform.smoothscale(self.image, (75, 75))
-        # self.image.set_colorkey((255, 0, 220), RLEACCEL)
+class ImgObj(pygame.sprite.Sprite):
+    def __init__(self, img, width, height):
+        super(ImgObj, self).__init__()
+        self.image = pygame.image.load(img)
+        if width and height != 0:
+            self.image = pygame.transform.smoothscale(self.image, (width, height))
         self.rect = self.image.get_rect()
-        self.rect = self.rect.move(140, 550)  # start position
+        self.position = (0, 0)
+
+    def set_position(self, offset_top, offset_left):
+        self.position = (offset_top, offset_left)
+
+    def move(self, offset_top, offset_left):
+        self.rect.move(offset_top, offset_left)
+
+    def set_image(self, img):
+        self.image = pygame.image.load(img)
+        pass
+
+
+class Player(ImgObj):
+    def __init__(self):
+        super(Player, self).__init__("img/hero.png", 75, 75)
+        self.rect = self.image.get_rect()
+        self.position = (150, 300)
         self.jmp = False  # in air
         self.grounded = True  # in ground
 
@@ -179,26 +208,6 @@ class FlyingEnemy(Enemy):
         # self.image.set_colorkey((255, 255, 255), RLEACCEL)
         self.rect = self.image.get_rect()
         self.rect = self.rect.move(800, random.randrange(50, 400))
-
-
-class ImgObj(pygame.sprite.Sprite):
-    def __init__(self, img, width, height):
-        super(ImgObj, self).__init__()
-        self.image = pygame.image.load(img)
-        if width and height != 0:
-            self.image = pygame.transform.smoothscale(self.image, (width, height))
-        self.rect = self.image.get_rect()
-        self.position = (0, 0)
-
-    def set_position(self, offset_top, offset_left):
-        self.position = (offset_top, offset_left)
-
-    def move(self, offset_top, offset_left):
-        self.rect.move(offset_top, offset_left)
-
-    def set_image(self, img):
-        self.image = pygame.image.load(img)
-        pass
 
 
 if __name__ == '__main__':
