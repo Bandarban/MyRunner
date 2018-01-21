@@ -41,8 +41,6 @@ class Menu(GameState):
 
         NAMANA
 
-        KAKEAS
-
 
 
     @staticmethod
