@@ -203,6 +203,7 @@ class ImgObj(pygame.sprite.Sprite):
 
     def set_img(self, img):
         self.image = pygame.image.load(img)
+        pass
 
 
 """
