@@ -128,19 +128,6 @@ class Game(GameState):
         return Game.all_sprites
 
 
-"""
-
-class Screen:
-    width = 800
-    height = 600
-    screen = pygame.display.set_mode((width, height))
-
-    def set_screen(self, width, height):
-        self.screen = pygame.display.set_mode((width, height))
-
-"""
-
-
 def main():
     State.init()
 
@@ -214,7 +201,6 @@ class Enemy(pygame.sprite.Sprite):
 
     def update(self):
         self.position = (self.position[0]-10, self.position[1])
-        #idk
         if self.rect.left < -50:
             self.kill()
 
