@@ -37,7 +37,11 @@ class Menu(GameState):
 
         Menu.exit_btn_act = ImgObj('img/Exit_selected.png', 0, 0)
         Menu.exit_btn_act.move(200, 350)
+<<<<<<< HEAD
         print("gi")
+=======
+        print("git test")
+>>>>>>> parent of f354ba6... 12
 
     @staticmethod
     def update():
