@@ -53,7 +53,8 @@ class Menu(GameState):
                     Menu.menu_state["Start"] = not Menu.menu_state["Start"]
                 if event.key == K_RETURN or event.key == K_SPACE:
                     if Menu.menu_state["Start"]:
-                        State.set_state(Game)
+                        # Menu.spriteList = []
+                        State.set_state(Game())
 
                     else:
                         exit(0)
@@ -89,6 +90,7 @@ class State:
     def set_state(state):
         State.current_state = state
         State.current_state.init()
+        State.update()
 
     @staticmethod
     def update():
@@ -108,13 +110,18 @@ class Game(GameState):
         Game.all_sprites = []
         Game.hero = Player()
         Game.enemy = Enemy()
+        Game.all_sprites.append((Game.game_background, Game.game_background.position))
         Game.all_sprites.append((Game.hero, Game.hero.position))
         Game.all_sprites.append((Game.enemy, Game.enemy.position))
 
     @staticmethod
     def update():
-        Game.player.update()
+        Game.all_sprites = []
+        Game.all_sprites.append((Game.game_background, Game.game_background.position))
+        Game.hero.update()
+        Game.all_sprites.append((Game.hero, Game.hero.position))
         Game.enemy.update()
+        Game.all_sprites.append((Game.enemy, Game.enemy.position))
 
     @staticmethod
     def get_sprite_group():
@@ -164,39 +171,49 @@ class ImgObj(pygame.sprite.Sprite):
 
 class Player(ImgObj):
     def __init__(self):
-        super(Player, self).__init__("img/hero.png", 75, 75)
+        super(Player, self).__init__("img/hero.jpg", 75, 75)
         self.rect = self.image.get_rect()
         self.position = (150, 300)
         self.jmp = False  # in air
         self.grounded = True  # in ground
 
-    def update(self, pressed_keys):
-        if pressed_keys[K_UP]:
-            if not self.jmp and self.grounded:
-                self.jmp = True
-                self.grounded = False
-        if self.jmp:
-            self.rect.move_ip(0, -14)
-            if self.rect.top < 250:
-                self.jmp = False
-        self.rect.move_ip(0, 7)
-        if self.rect.bottom > 550:
-            self.jmp = False
-            self.rect.bottom = 550
-            self.grounded = True
+    def listener(self):
+        for event in pygame.event.get():
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    exit(0)
+                if event.key == K_UP:
+                    if not self.jmp and self.grounded:
+                        self.jmp = True
+                        self.grounded = False
+                if self.jmp:
+                    self.rect.move_ip(0, -14)
+                    if self.rect.top < 250:
+                        self.jmp = False
+                self.rect.move_ip(0, 7)
+                if self.rect.bottom > 550:
+                    self.jmp = False
+                    self.rect.bottom = 550
+                    self.grounded = True
+            elif event.type == QUIT:
+                exit(0)
+
+    def update(self):
+        self.listener()
 
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         super(Enemy, self).__init__()
-        self.image = pygame.image.load('tank41.png')
+        self.image = pygame.image.load('img/hero.jpg')
         self.image = pygame.transform.smoothscale(self.image, (175, 75))
         self.image.set_colorkey(None)
         self.rect = self.image.get_rect()
         self.rect = self.rect.move(850, 470)
+        self.position = (500, 500)
 
     def update(self):
-        self.rect.move_ip(-10, 0)
+        self.position = (self.position[0]-10, self.position[1])
         if self.rect.left < -50:
             self.kill()
 
