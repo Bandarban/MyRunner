@@ -106,9 +106,9 @@ class Game(GameState):
     def init():
         Game.game_background = ImgObj("img/game_bg.png", State.width, State.height)
         Game.all_sprites = []
-        Game.hero = Player
-        Game.enemy = Enemy
-        Game.all_sprites.append((Game.hero, Game.hero.grounded))
+        Game.hero = Player()
+        Game.enemy = Enemy()
+        Game.all_sprites.append((Game.hero, Game.hero.position))
         Game.all_sprites.append((Game.enemy, Game.enemy.position))
 
     @staticmethod
