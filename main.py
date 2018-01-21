@@ -206,6 +206,9 @@ class ImgObj(pygame.sprite.Sprite):
         pass
 
 
+if __name__ == '__main__':
+    main()
+
 """
 
 def menu(menu_state, all):
@@ -303,5 +306,4 @@ def main():
         pygame.display.flip()
         """
 
-if __name__ == '__main__':
-    main()
+
