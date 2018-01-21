@@ -20,36 +20,28 @@ class GameState:
 
 class Menu(GameState):
     spriteList = []
-    menu_state = {"Start": True, "Exit": False, "First Time": True}
+    menu_state = {"Start": True, "First Time": True}
 
     @staticmethod
     def init():
         Menu.background = ImgObj('img/menu-bg.jpg', 800, 600)
-
-        Menu.start_btn_act = ImgObj('img/Start-selected.png', 0, 0)
-        Menu.start_btn_act.move(200, 200)
-
-        Menu.start_btn = ImgObj('img/Start.png', 0, 0)
-        Menu.start_btn.move(200, 200)
-
+        Menu.start_btn = ImgObj('img/Start-selected.png', 0, 0)
+        Menu.start_btn.set_position(75, 200)
         Menu.exit_btn = ImgObj('img/Exit.png', 0, 0)
-        Menu.exit_btn.move(200, 350)
-
-        Menu.exit_btn_act = ImgObj('img/Exit_selected.png', 0, 0)
-        Menu.exit_btn_act.move(200, 350)
+        Menu.exit_btn.set_position(75, 300)
+        Menu.spriteList.append((Menu.background, Menu.background.position))
+        Menu.spriteList.append((Menu.start_btn, Menu.start_btn.position))
+        Menu.spriteList.append((Menu.exit_btn, Menu.exit_btn.position))
 
     @staticmethod
     def update():
-        Menu.spriteList = []
         Menu.listener()
-        Menu.spriteList.append((Menu.background, (0, 0)))
-
         if Menu.menu_state["Start"]:
-            Menu.spriteList.append((Menu.start_btn_act, (75, 200)))
-            Menu.spriteList.append((Menu.exit_btn, (75, 300)))
+            Menu.spriteList[1][0].set_image("img/Start-selected.png")
+            Menu.spriteList[2][0].set_image("img/Exit.png")
         else:
-            Menu.spriteList.append((Menu.start_btn, (75, 200)))
-            Menu.spriteList.append((Menu.exit_btn_act, (75, 300)))
+            Menu.spriteList[1][0].set_image("img/Start.png")
+            Menu.spriteList[2][0].set_image("img/Exit_selected.png")
 
     @staticmethod
     def listener():
@@ -59,7 +51,6 @@ class Menu(GameState):
                     exit(0)
                 if event.key == K_DOWN or event.key == K_s or event.key == K_UP or event.key == K_w:
                     Menu.menu_state["Start"] = not Menu.menu_state["Start"]
-                    Menu.menu_state["Exit"] = not Menu.menu_state["Exit"]
                 if event.key == K_RETURN or event.key == K_SPACE:
                     if Menu.menu_state["Start"]:
                         State.set_state(Game)
@@ -197,11 +188,15 @@ class ImgObj(pygame.sprite.Sprite):
         if width and height != 0:
             self.image = pygame.transform.smoothscale(self.image, (width, height))
         self.rect = self.image.get_rect()
+        self.position = (0, 0)
+
+    def set_position(self, offset_top, offset_left):
+        self.position = (offset_top, offset_left)
 
     def move(self, offset_top, offset_left):
         self.rect.move(offset_top, offset_left)
 
-    def set_img(self, img):
+    def set_image(self, img):
         self.image = pygame.image.load(img)
         pass
 
@@ -305,5 +300,3 @@ def main():
             break
         pygame.display.flip()
         """
-
-
