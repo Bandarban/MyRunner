@@ -1,11 +1,12 @@
 import pygame
-import pygame.display as display
+import Runner.MyRunner.methods as methods
+import os, sys
+import pygame.display
 from pygame.locals import *
 import random
 from abc import ABCMeta, abstractclassmethod
 
 
-# working version at 04.01 17:02
 class GameState:
     __metaclass__ = ABCMeta
 
@@ -14,8 +15,8 @@ class GameState:
         """ Обновление """
 
     @abstractclassmethod
-    def get_sprite_group(self):
-        """Спрайтгруппа для рендера"""
+    def render(self):
+        """Рендер текущего состояния"""
 
 
 class Menu(GameState):
@@ -67,20 +68,13 @@ class Menu(GameState):
 
 
 class State:
-    width = 0
-    height = 0
-    screen = display
-
     current_state = Menu
 
     @staticmethod
     def init():
         pygame.init()
-        Menu.init()
-        State.current_state = Menu
-        State.width = 800
-        State.height = 600
-        State.screen = display.set_mode((State.width, State.height))
+        State.set_state(Menu)
+        State.screen = pygame.display.set_mode((800, 600))
 
     @staticmethod
     def get_state():
@@ -98,8 +92,7 @@ class State:
 
     @staticmethod
     def render():
-        for sprite in State.get_state().get_sprite_group():
-            State.screen.blit(sprite[0].image, sprite[1])
+        State.get_state().render()
         pygame.display.flip()
 
 
@@ -116,12 +109,8 @@ class Game(GameState):
 
     @staticmethod
     def update():
-        Game.all_sprites = []
-        Game.all_sprites.append((Game.game_background, Game.game_background.position))
-        Game.hero.update()
-        Game.all_sprites.append((Game.hero, Game.hero.position))
-        Game.enemy.update()
-        Game.all_sprites.append((Game.enemy, Game.enemy.position))
+        for each in Game.all_sprites:
+            each.update()
 
     @staticmethod
     def get_sprite_group():
@@ -200,7 +189,7 @@ class Enemy(pygame.sprite.Sprite):
         self.position = (500, 500)
 
     def update(self):
-        self.position = (self.position[0]-10, self.position[1])
+        self.position = (self.position[0] - 10, self.position[1])
         if self.rect.left < -50:
             self.kill()
 
