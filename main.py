@@ -1,10 +1,10 @@
 import pygame
-import Runner.MyRunner.methods as methods
 import os, sys
 import pygame.display
 from pygame.locals import *
 import random
 from abc import ABCMeta, abstractclassmethod
+import methods
 
 
 # Абстрактные и родительские классы
@@ -35,6 +35,8 @@ class Object:
     @abstractclassmethod
     def get_position(self):
         """"""
+
+
 
 # Все что выше меня устраивает
 
