@@ -70,7 +70,6 @@ class Menu(GameState):
                     self.menu_state["Start"] = not self.menu_state["Start"]
                 if event.key == K_RETURN or event.key == K_SPACE:
                     if self.menu_state["Start"]:
-                        # Menu.spriteList = []
                         State.set_state(Game())
                     else:
                         exit(0)
@@ -97,7 +96,6 @@ class State:
     @staticmethod
     def set_state(state):
         State.current_state = state
-        State.current_state.init()
         State.update()
 
     @staticmethod
