@@ -11,7 +11,7 @@ from abc import ABCMeta, abstractclassmethod
 
 class GameState:
     __metaclass__ = ABCMeta
-    #asd
+
     @abstractclassmethod
     def update(self):
         """ Обновление """
