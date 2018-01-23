@@ -1,3 +1,5 @@
 
 qwe.py
 todo_list
+*.xml
+.idea/MyRunner.iml
