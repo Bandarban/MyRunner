@@ -7,6 +7,8 @@ import random
 from abc import ABCMeta, abstractclassmethod
 
 
+# Абстрактные и родительские классы
+
 class GameState:
     __metaclass__ = ABCMeta
 
@@ -19,56 +21,68 @@ class GameState:
         """Рендер текущего состояния"""
 
 
+class Object:
+    __metaclass__ = ABCMeta
+
+    @abstractclassmethod
+    def get_surface(self):
+        """"""
+
+    @abstractclassmethod
+    def get_rect(self):
+        """"""
+
+    @abstractclassmethod
+    def get_position(self):
+        """"""
+
+# Все что выше меня устраивает
+
 class Menu(GameState):
     spriteList = []
     menu_state = {"Start": True, "First Time": True}
 
-    @staticmethod
-    def init():
-        Menu.background = ImgObj('img/menu-bg.jpg', 800, 600)
-        Menu.start_btn = ImgObj('img/Start-selected.png', 0, 0)
-        Menu.start_btn.set_position(75, 200)
-        Menu.exit_btn = ImgObj('img/Exit.png', 0, 0)
-        Menu.exit_btn.set_position(75, 300)
-        Menu.spriteList.append((Menu.background, Menu.background.position))
-        Menu.spriteList.append((Menu.start_btn, Menu.start_btn.position))
-        Menu.spriteList.append((Menu.exit_btn, Menu.exit_btn.position))
+    def __init__(self):
+        self.background = ImgObj('img/menu-bg.jpg', 800, 600)
+        self.start_btn = ImgObj('img/Start-selected.png', 0, 0)
+        self.start_btn.set_position(75, 200)
+        self.exit_btn = ImgObj('img/Exit.png', 0, 0)
+        self.exit_btn.set_position(75, 300)
+        self.spriteList.append((self.background, self.background.position))
+        self.spriteList.append((self.start_btn, self.start_btn.position))
+        self.spriteList.append((self.exit_btn, self.exit_btn.position))
 
-    @staticmethod
-    def update():
-        Menu.listener()
-        if Menu.menu_state["Start"]:
-            Menu.spriteList[1][0].set_image("img/Start-selected.png")
-            Menu.spriteList[2][0].set_image("img/Exit.png")
+    def update(self):
+        self.listener()
+        if self.menu_state["Start"]:
+            self.spriteList[1][0].set_image("img/Start-selected.png")
+            self.spriteList[2][0].set_image("img/Exit.png")
         else:
-            Menu.spriteList[1][0].set_image("img/Start.png")
-            Menu.spriteList[2][0].set_image("img/Exit_selected.png")
+            self.spriteList[1][0].set_image("img/Start.png")
+            self.spriteList[2][0].set_image("img/Exit_selected.png")
 
-    @staticmethod
-    def listener():
+    def listener(self):
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     exit(0)
                 if event.key == K_DOWN or event.key == K_s or event.key == K_UP or event.key == K_w:
-                    Menu.menu_state["Start"] = not Menu.menu_state["Start"]
+                    self.menu_state["Start"] = not self.menu_state["Start"]
                 if event.key == K_RETURN or event.key == K_SPACE:
-                    if Menu.menu_state["Start"]:
+                    if self.menu_state["Start"]:
                         # Menu.spriteList = []
                         State.set_state(Game())
-
                     else:
                         exit(0)
             elif event.type == QUIT:
                 exit(0)
 
-    @staticmethod
-    def get_sprite_group():
-        return Menu.spriteList
+    def render(self):
+        pass
 
 
 class State:
-    current_state = Menu
+    current_state = Menu()
 
     @staticmethod
     def init():
@@ -97,8 +111,8 @@ class State:
 
 
 class Game(GameState):
-    @staticmethod
-    def init():
+
+    def __init__(self):
         Game.game_background = ImgObj("img/game_bg.png", State.width, State.height)
         Game.all_sprites = []
         Game.hero = Player()
