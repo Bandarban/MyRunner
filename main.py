@@ -3,28 +3,13 @@ import os, sys
 import pygame.display
 from pygame.locals import *
 import random
-from abc import ABCMeta, abstractclassmethod
 import methods
 
 
-# Абстрактные и родительские классы
-
-class GameState:
-    __metaclass__ = ABCMeta
-
-    @abstractclassmethod
-    def update(self):
-        """ Обновление """
-
-    @abstractclassmethod
-    def render(self):
-        """Рендер текущего состояния"""
-
-
-class ImgObj(pygame.sprite.Sprite, Object):
-    def __init__(self, img_path):
+class ImgObj(pygame.sprite.Sprite):
+    def __init__(self, img_path, colorkey=None, scale=None):
         super(ImgObj, self).__init__()
-        self.surface, self.rect = methods.load_image(img_path)
+        self.surface, self.rect = methods.load_image(img_path, colorkey, scale)
         self.position_x = 0
         self.position_y = 0
         self.acceleration_x = 0
@@ -32,13 +17,46 @@ class ImgObj(pygame.sprite.Sprite, Object):
         self.velocity_x = 0
         self.velocity_y = 0
 
+    def update(self):
+        self.velocity_x += self.acceleration_x
+        self.velocity_y += self.acceleration_y
+        self.position_x += self.velocity_x
+        self.position_y += self.velocity_y
+
+
+class State:
+    current_state = True
+    screen = True
+
+    @staticmethod
+    def init():
+        pygame.init()
+        State.current_state = Menu()
+        State.screen = pygame.display.set_mode((800, 600))
+
+    @staticmethod
+    def set_state(state):
+        State.current_state = state
+        State.update()
+
+    @staticmethod
+    def update():
+        State.current_state.update()
+
+    @staticmethod
+    def render():
+        State.screen.fill((255, 255, 255))
+        State.current_state.render()
+        pygame.display.flip()
+
+
 # Все что выше меня устраивает
-class Menu(GameState):
+class Menu:
     spriteList = []
     menu_state = {"Start": True, "First Time": True}
 
     def __init__(self):
-        self.background = ImgObj('img/menu-bg.jpg', 800, 600)
+        self.background = ImgObj('img/menu-bg.jpg', scale=(800, 600))
         self.start_btn = ImgObj('img/Start-selected.png', 0, 0)
         self.start_btn.set_position(75, 200)
         self.exit_btn = ImgObj('img/Exit.png', 0, 0)
@@ -75,34 +93,6 @@ class Menu(GameState):
         pass
 
 
-class State:
-    current_state = Menu()
-
-    @staticmethod
-    def init():
-        pygame.init()
-        State.set_state(Menu)
-        State.screen = pygame.display.set_mode((800, 600))
-
-    @staticmethod
-    def get_state():
-        return State.current_state
-
-    @staticmethod
-    def set_state(state):
-        State.current_state = state
-        State.update()
-
-    @staticmethod
-    def update():
-        State.get_state().update()
-
-    @staticmethod
-    def render():
-        State.get_state().render()
-        pygame.display.flip()
-
-
 class Game(GameState):
 
     def __init__(self):
@@ -130,10 +120,6 @@ def main():
     while True:
         State.update()
         State.render()
-
-
-
-
 
 
 class Player(ImgObj):

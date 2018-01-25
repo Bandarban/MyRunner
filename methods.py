@@ -3,9 +3,12 @@ from pygame.locals import *
 import os, sys
 
 
-def load_image(img_path, colorkey=None):
+def load_image(img_path, colorkey=None, scale=None):
     try:
+
         image = pygame.image.load(img_path)
+        if scale is not None:
+            image = pygame.transform.smoothscale(image, (scale[0], scale[1]))
         image = image.convert()
         if colorkey is not None:
             if colorkey is -1:
@@ -18,4 +21,4 @@ def load_image(img_path, colorkey=None):
         exit(0)
 
 
-a, b = load_image("img/Exit.png")
+#a, b = load_image("img/Exit.png")
