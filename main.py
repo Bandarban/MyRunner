@@ -49,7 +49,6 @@ class Object:
         pass
 
 
-
 # Все что выше меня устраивает
 
 class Menu(GameState):
@@ -151,17 +150,12 @@ def main():
         State.render()
 
 
-class ImgObj(pygame.sprite.Sprite):
-    def __init__(self, img, width, height):
+class ImgObj(pygame.sprite.Sprite, Object):
+    def __init__(self, img_path):
         super(ImgObj, self).__init__()
-        self.image = pygame.image.load(img)
-        if width and height != 0:
-            self.image = pygame.transform.smoothscale(self.image, (width, height))
-        self.rect = self.image.get_rect()
-        self.position = (0, 0)
-
-    def set_position(self, offset_top, offset_left):
-        self.position = (offset_top, offset_left)
+        self.surface, self.rect = methods.load_image(img_path)
+        self.position_x = 0
+        self.position_y = 0
 
     def move(self, offset_top, offset_left):
         self.rect.move(offset_top, offset_left)
