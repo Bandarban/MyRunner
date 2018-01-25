@@ -3,17 +3,19 @@ from pygame.locals import *
 import os, sys
 
 
-def load_image(name, colorkey=None):
-    fullname = os.path.join('data', name)
+def load_image(img_path, colorkey=None):
     try:
-        image = pygame.image.load(fullname)
-    except pygame.error:
-        print('Cannot load image:', name)
+        image = pygame.image.load(img_path)
+        image = image.convert()
+        if colorkey is not None:
+            if colorkey is -1:
+                colorkey = image.get_at((0, 0))
+            image.set_colorkey(colorkey, RLEACCEL)
+        return image, image.get_rect()
+
+    except pygame.error as error:
+        print('Cannot load image:', img_path, error)
         exit(0)
 
-    image = image.convert()
-    if colorkey is not None:
-        if colorkey is -1:
-            colorkey = image.get_at((0, 0))
-        image.set_colorkey(colorkey, RLEACCEL)
-    return image, image.get_rect()
+
+a, b = load_image("img/Exit.png")

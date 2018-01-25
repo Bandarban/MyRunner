@@ -49,7 +49,34 @@ class Object:
         pass
 
 
+class ImgObj(pygame.sprite.Sprite, Object):
+    def __init__(self, img_path):
+        super(ImgObj, self).__init__()
+        self.surface, self.rect = methods.load_image(img_path)
+        self.position_x = 0
+        self.position_y = 0
+        self.acceleration_x = 0
+        self.acceleration_y = 0
+        self.velocity_x = 0
+        self.velocity_y = 0
 
+    def set_image(self, img_path, colorkey):
+        self.surface, self.rect = methods.load_image(img_path, colorkey)
+
+    def get_acceleration(self):
+        return self.acceleration_x, self.acceleration_y
+
+    def get_position(self):
+        return self.position_x, self.position_y
+
+    def get_rect(self):
+        return self.rect
+
+    def get_velocity(self):
+        return self.velocity_x, self.velocity_y
+
+    def get_surface(self):
+        return self
 # Все что выше меня устраивает
 
 class Menu(GameState):
@@ -151,24 +178,8 @@ def main():
         State.render()
 
 
-class ImgObj(pygame.sprite.Sprite):
-    def __init__(self, img, width, height):
-        super(ImgObj, self).__init__()
-        self.image = pygame.image.load(img)
-        if width and height != 0:
-            self.image = pygame.transform.smoothscale(self.image, (width, height))
-        self.rect = self.image.get_rect()
-        self.position = (0, 0)
 
-    def set_position(self, offset_top, offset_left):
-        self.position = (offset_top, offset_left)
 
-    def move(self, offset_top, offset_left):
-        self.rect.move(offset_top, offset_left)
-
-    def set_image(self, img):
-        self.image = pygame.image.load(img)
-        pass
 
 
 class Player(ImgObj):
