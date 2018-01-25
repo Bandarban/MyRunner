@@ -59,7 +59,7 @@ class ImgObj(pygame.sprite.Sprite, Object):
         self.acceleration_y = 0
         self.velocity_x = 0
         self.velocity_y = 0
-
+    #git broken?
     def set_image(self, img_path, colorkey):
         self.surface, self.rect = methods.load_image(img_path, colorkey)
 
