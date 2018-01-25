@@ -21,34 +21,6 @@ class GameState:
         """Рендер текущего состояния"""
 
 
-class Object:
-    __metaclass__ = ABCMeta
-
-    @abstractclassmethod
-    def get_surface(self):
-        pass
-
-    @abstractclassmethod
-    def get_rect(self):
-        pass
-
-    @abstractclassmethod
-    def get_position(self):
-        pass
-
-    @abstractclassmethod
-    def get_velocity(self):
-        pass
-
-    @abstractclassmethod
-    def get_acceleration(self):
-        pass
-
-    @abstractclassmethod
-    def update(self):
-        pass
-
-
 class ImgObj(pygame.sprite.Sprite, Object):
     def __init__(self, img_path):
         super(ImgObj, self).__init__()
@@ -59,26 +31,8 @@ class ImgObj(pygame.sprite.Sprite, Object):
         self.acceleration_y = 0
         self.velocity_x = 0
         self.velocity_y = 0
-    #git broken?
-    def set_image(self, img_path, colorkey):
-        self.surface, self.rect = methods.load_image(img_path, colorkey)
 
-    def get_acceleration(self):
-        return self.acceleration_x, self.acceleration_y
-
-    def get_position(self):
-        return self.position_x, self.position_y
-
-    def get_rect(self):
-        return self.rect
-
-    def get_velocity(self):
-        return self.velocity_x, self.velocity_y
-
-    def get_surface(self):
-        return self
 # Все что выше меня устраивает
-
 class Menu(GameState):
     spriteList = []
     menu_state = {"Start": True, "First Time": True}
