@@ -26,15 +26,27 @@ class Object:
 
     @abstractclassmethod
     def get_surface(self):
-        """"""
+        pass
 
     @abstractclassmethod
     def get_rect(self):
-        """"""
+        pass
 
     @abstractclassmethod
     def get_position(self):
-        """"""
+        pass
+
+    @abstractclassmethod
+    def get_velocity(self):
+        pass
+
+    @abstractclassmethod
+    def get_acceleration(self):
+        pass
+
+    @abstractclassmethod
+    def update(self):
+        pass
 
 
 
