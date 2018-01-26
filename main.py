@@ -94,28 +94,24 @@ class Menu:
             State.screen.blit(sprite.surface, (sprite.position_x, sprite.position_y))
 
 
-# Все что выше меня устраивает
-
-
 class Game:
+    sprite_list = []
 
     def __init__(self):
-        Game.game_background = ImgObj("img/game_bg.png", State.width, State.height)
-        Game.all_sprites = []
-        Game.hero = Player()
-        Game.enemy = Enemy()
-        Game.all_sprites.append((Game.game_background, Game.game_background.position))
-        Game.all_sprites.append((Game.hero, Game.hero.position))
-        Game.all_sprites.append((Game.enemy, Game.enemy.position))
+        self.game_background = ImgObj("img/game_bg.png", scale=(800, 600))
+        self.hero = Player()
+        self.enemy = Enemy()
+        self.sprite_list.append(self.game_background)
+        self.sprite_list.append(self.hero)
+        # self.all_sprites.append(self.enemy)
 
-    @staticmethod
-    def update():
-        for each in Game.all_sprites:
-            each.update()
+    def update(self):
+        for sprite in self.sprite_list:
+            sprite.update()
 
-    @staticmethod
-    def get_sprite_group():
-        return Game.all_sprites
+    def render(self):
+        for sprite in self.sprite_list:
+            State.screen.blit(sprite.surface, (sprite.position_x, sprite.position_y))
 
 
 def main():
@@ -125,13 +121,17 @@ def main():
         State.render()
 
 
+# Все что выше меня устраивает
+
 class Player(ImgObj):
     def __init__(self):
-        super(Player, self).__init__("img/hero.jpg", 75, 75)
-        self.rect = self.image.get_rect()
-        self.position = (150, 300)
+        super(Player, self).__init__("img/hero.jpg", scale=(75, 75))
+        self.position_x, self.position_y = (50, 450)
         self.jmp = False  # in air
         self.grounded = True  # in ground
+
+    def update(self):
+        self.listener()
 
     def listener(self):
         for event in pygame.event.get():
@@ -154,8 +154,7 @@ class Player(ImgObj):
             elif event.type == QUIT:
                 exit(0)
 
-    def update(self):
-        self.listener()
+
 
 
 class Enemy(pygame.sprite.Sprite):
