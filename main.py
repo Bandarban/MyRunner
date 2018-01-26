@@ -53,7 +53,6 @@ class State:
         pygame.display.flip()
 
 
-# Все что выше меня устраивает
 class Menu:
     sprite_list = []
     menu_state = {"Start": True, "First Time": True}
@@ -93,6 +92,9 @@ class Menu:
     def render(self):
         for sprite in self.sprite_list:
             State.screen.blit(sprite.surface, (sprite.position_x, sprite.position_y))
+
+
+# Все что выше меня устраивает
 
 
 class Game:
