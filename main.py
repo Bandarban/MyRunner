@@ -1,5 +1,4 @@
 import pygame
-import os, sys
 import pygame.display
 from pygame.locals import *
 import random
@@ -7,11 +6,15 @@ import methods
 
 
 class ImgObj(pygame.sprite.Sprite):
-    def __init__(self, img_path, colorkey=None, scale=None):
+    def __init__(self, img_path, colorkey=None, scale=None, position=None):
         super(ImgObj, self).__init__()
         self.surface, self.rect = methods.load_image(img_path, colorkey, scale)
-        self.position_x = 0
-        self.position_y = 0
+        if position is not None:
+            self.position_x, self.position_y = position
+        else:
+            self.position_x = 0
+            self.position_y = 0
+
         self.acceleration_x = 0
         self.acceleration_y = 0
         self.velocity_x = 0
@@ -26,7 +29,7 @@ class ImgObj(pygame.sprite.Sprite):
 
 class State:
     current_state = True
-    screen = True
+    screen = pygame.display.set_mode((800, 600))
 
     @staticmethod
     def init():
@@ -45,34 +48,32 @@ class State:
 
     @staticmethod
     def render():
-        State.screen.fill((255, 255, 255))
+        State.screen.fill((0, 0, 0))
         State.current_state.render()
         pygame.display.flip()
 
 
 # Все что выше меня устраивает
 class Menu:
-    spriteList = []
+    sprite_list = []
     menu_state = {"Start": True, "First Time": True}
 
     def __init__(self):
         self.background = ImgObj('img/menu-bg.jpg', scale=(800, 600))
-        self.start_btn = ImgObj('img/Start-selected.png', 0, 0)
-        self.start_btn.set_position(75, 200)
-        self.exit_btn = ImgObj('img/Exit.png', 0, 0)
-        self.exit_btn.set_position(75, 300)
-        self.spriteList.append((self.background, self.background.position))
-        self.spriteList.append((self.start_btn, self.start_btn.position))
-        self.spriteList.append((self.exit_btn, self.exit_btn.position))
+        self.start_btn = ImgObj('img/Start-selected.png', position=(75, 200))
+        self.exit_btn = ImgObj('img/Exit.png', position=(75, 300))
+        self.sprite_list.append(self.background)
+        self.sprite_list.append(self.start_btn)
+        self.sprite_list.append(self.exit_btn)
 
     def update(self):
         self.listener()
         if self.menu_state["Start"]:
-            self.spriteList[1][0].set_image("img/Start-selected.png")
-            self.spriteList[2][0].set_image("img/Exit.png")
+            self.start_btn.surface, self.start_btn.rect = methods.load_image("img/Start-selected.png")
+            self.exit_btn.surface, self.exit_btn.rect = methods.load_image("img/Exit.png")
         else:
-            self.spriteList[1][0].set_image("img/Start.png")
-            self.spriteList[2][0].set_image("img/Exit_selected.png")
+            self.start_btn.surface, self.start_btn.rect = methods.load_image("img/Start.png")
+            self.exit_btn.surface, self.exit_btn.rect = methods.load_image("img/Exit_selected.png")
 
     def listener(self):
         for event in pygame.event.get():
@@ -90,10 +91,11 @@ class Menu:
                 exit(0)
 
     def render(self):
-        pass
+        for sprite in self.sprite_list:
+            State.screen.blit(sprite.surface, (sprite.position_x, sprite.position_y))
 
 
-class Game(GameState):
+class Game:
 
     def __init__(self):
         Game.game_background = ImgObj("img/game_bg.png", State.width, State.height)
@@ -116,7 +118,6 @@ class Game(GameState):
 
 def main():
     State.init()
-
     while True:
         State.update()
         State.render()

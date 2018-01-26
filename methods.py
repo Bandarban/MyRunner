@@ -1,6 +1,5 @@
 import pygame
 from pygame.locals import *
-import os, sys
 
 
 def load_image(img_path, colorkey=None, scale=None):
@@ -20,5 +19,3 @@ def load_image(img_path, colorkey=None, scale=None):
         print('Cannot load image:', img_path, error)
         exit(0)
 
-
-#a, b = load_image("img/Exit.png")
