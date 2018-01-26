@@ -98,7 +98,7 @@ class Game:
     sprite_list = []
 
     def __init__(self):
-        self.game_background = ImgObj("img/game_bg.png", scale=(800, 600))
+        self.game_background = ImgObj("img/game_bg.png", scale=(952, 600))
         self.hero = Player()
         self.enemy = Enemy()
         self.sprite_list.append(self.game_background)
@@ -147,9 +147,9 @@ class Player(ImgObj):
                     if self.rect.top < 250:
                         self.jmp = False
                 self.rect.move_ip(0, 7)
-                if self.rect.bottom > 550:
+                if self.position_y > 50:
                     self.jmp = False
-                    self.rect.bottom = 550
+                    self.position_y = 50
                     self.grounded = True
             elif event.type == QUIT:
                 exit(0)
