@@ -129,6 +129,7 @@ class Player(ImgObj):
         self.position_x, self.position_y = (50, 450)
         self.jmp = False  # in air
         self.grounded = True  # in ground
+        self.acceleration_y = -9.8
 
     def update(self):
         self.listener()
