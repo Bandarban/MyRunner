@@ -8,12 +8,9 @@ import methods
 class ImgObj(pygame.sprite.Sprite):
     def __init__(self, img_path, colorkey=None, scale=None, position=None):
         super(ImgObj, self).__init__()
-        self.surface, self.rect = methods.load_image(img_path, colorkey, scale)
+        self.surface, self.rect = methods.load_image(img_path, colorkey, scale, position)
         if position is not None:
-            self.position_x, self.position_y = position
-        else:
-            self.position_x = 0
-            self.position_y = 0
+            self.rect.move(position)
 
         self.acceleration_x = 0
         self.acceleration_y = 0
@@ -23,8 +20,10 @@ class ImgObj(pygame.sprite.Sprite):
     def update(self):
         self.velocity_x += self.acceleration_x
         self.velocity_y += self.acceleration_y
-        self.position_x += self.velocity_x
-        self.position_y += self.velocity_y
+        self.rect.move_ip(self.velocity_x, self.velocity_y)
+
+    def updater(self):
+        pass
 
 
 class State:
@@ -68,11 +67,12 @@ class Menu:
     def update(self):
         self.listener()
         if self.menu_state["Start"]:
-            self.start_btn.surface, self.start_btn.rect = methods.load_image("img/Start-selected.png")
-            self.exit_btn.surface, self.exit_btn.rect = methods.load_image("img/Exit.png")
+            self.start_btn.surface, self.start_btn.rect = methods.load_image("img/Start-selected.png",
+                                                                             position=(75, 200))
+            self.exit_btn.surface, self.exit_btn.rect = methods.load_image("img/Exit.png", position=(75, 300))
         else:
-            self.start_btn.surface, self.start_btn.rect = methods.load_image("img/Start.png")
-            self.exit_btn.surface, self.exit_btn.rect = methods.load_image("img/Exit_selected.png")
+            self.start_btn.surface, self.start_btn.rect = methods.load_image("img/Start.png", position=(75, 200))
+            self.exit_btn.surface, self.exit_btn.rect = methods.load_image("img/Exit_selected.png", position=(75, 300))
 
     def listener(self):
         for event in pygame.event.get():
@@ -91,7 +91,7 @@ class Menu:
 
     def render(self):
         for sprite in self.sprite_list:
-            State.screen.blit(sprite.surface, (sprite.position_x, sprite.position_y))
+            State.screen.blit(sprite.surface, sprite.rect)
 
 
 class Game:
@@ -100,6 +100,7 @@ class Game:
     def __init__(self):
         self.game_background = ImgObj("img/game_bg.png", scale=(952, 600))
         self.hero = Player()
+        self.hero.rect.move(50, 450)
         self.enemy = Enemy()
         self.sprite_list.append(self.game_background)
         self.sprite_list.append(self.hero)
@@ -107,11 +108,11 @@ class Game:
 
     def update(self):
         for sprite in self.sprite_list:
-            sprite.update()
+            sprite.updater()
 
     def render(self):
         for sprite in self.sprite_list:
-            State.screen.blit(sprite.surface, (sprite.position_x, sprite.position_y))
+            State.screen.blit(sprite.surface, sprite.rect)
 
 
 def main():
@@ -125,14 +126,22 @@ def main():
 
 class Player(ImgObj):
     def __init__(self):
-        super(Player, self).__init__("img/hero.jpg", scale=(75, 75))
-        self.position_x, self.position_y = (50, 450)
+        super(Player, self).__init__("img/hero.jpg", scale=(75, 75), position=(50, 450))
         self.jmp = False  # in air
         self.grounded = True  # in ground
-        self.acceleration_y = -9.8
+        self.acceleration_y = 1
 
-    def update(self):
+    def updater(self):
         self.listener()
+        if self.grounded:
+            self.acceleration_y = 0
+            self.velocity_y = 0
+        if self.rect.bottom > 500:
+            self.jmp = False
+            self.grounded = True
+            self.rect.bottom = 500
+            self.velocity_y = 0
+        self.update()
 
     def listener(self):
         for event in pygame.event.get():
@@ -143,19 +152,10 @@ class Player(ImgObj):
                     if not self.jmp and self.grounded:
                         self.jmp = True
                         self.grounded = False
-                if self.jmp:
-                    self.rect.move_ip(0, -14)
-                    if self.rect.top < 250:
-                        self.jmp = False
-                self.rect.move_ip(0, 7)
-                if self.position_y > 50:
-                    self.jmp = False
-                    self.position_y = 50
-                    self.grounded = True
+                        self.velocity_y = -25
+                        self.acceleration_y = 1
             elif event.type == QUIT:
                 exit(0)
-
-
 
 
 class Enemy(pygame.sprite.Sprite):
