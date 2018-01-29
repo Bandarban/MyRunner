@@ -109,6 +109,8 @@ class Game:
         # self.all_sprites.append(self.enemy)
 
     def update(self):
+        if self.game_background.rect.right > 800:
+            self.game_background.rect.move_ip(-1, 0)
         for sprite in self.sprite_list:
             sprite.updater()
 
@@ -137,26 +139,32 @@ class Player(ImgObj):
         self.acceleration_y = 1
         self.velocity_x = 2
         self.run_sprites = []
+        self.fly_sprites = []
         for i in range(1, 8):
             self.run_sprites.append(
-                (methods.load_image("img/Game/Hero/Run/" + str(i) + ".png", colorkey=-1, scale=1)))
-        self.animations = 0
+                (methods.load_image("img/Game/Hero/Run/" + str(i) + ".png", colorkey=-1, scale=(2.2, None))))
+        for i in range(1, 4):
+            self.fly_sprites.append(
+                methods.load_image("img/Game/Hero/Jump/" + str(i) + ".png", colorkey=-1, scale=(2.2, None)))
+        self.counter = 0
 
     def updater(self):
+        self.counter += 1
         self.listener()
         if self.rect.left >= 100:
             self.rect.left = 100
             self.velocity_x = 0
         if self.grounded:
-            self.surface, dontchange = self.run_sprites[self.animations//5]
-            self.animations += 1
-            self.animations = self.animations % 35
+            self.surface, Null = self.run_sprites[self.counter % 35 // 5]
             self.acceleration_y = 0
             self.velocity_y = 0
+        if self.jmp:
+            self.surface, Null = self.fly_sprites[1]
+
         if self.rect.bottom > 530:
             self.jmp = False
             self.grounded = True
-            self.animations = 0
+            self.counter = 0
             self.rect.bottom = 530
             self.velocity_y = 0
         self.update()
@@ -203,100 +211,3 @@ class FlyingEnemy(Enemy):
 
 if __name__ == '__main__':
     main()
-
-"""
-
-def menu(menu_state, all):
-    menu_state = menu_listener(menu_state)
-    if menu_state == 0:
-
-    else:
-        start_button = ImgObj('img/Start.png', 0, 0)
-
-    all.append(start_button)
-    return menu_state
-
-
-def menu_listener(menu_state):
-    global running
-
-    return menu_state
-
-
-def main():
-    State.init()
-    print(State.get_state())
-    global running
-    pygame.init()
-    screen = Screen
-    all_sprites = []
-    enemies_sprites = pygame.sprite.Group()
-
-    state = "Menu"
-    menu_state = 0
-    # background = pygame.Surface(screen.get_size())
-
-    counter = 0
-
-    # game loop
-    while running:
-        if state == "Menu":  #
-            menu_state = menu(menu_state, all_sprites)
-
-        elif state == "Game":
-            counter += 1
-
-        render(screen, all_sprites)
-
-      
-        
-        start = time.time()
-        for event in pygame.event.get():
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    running = False
-            elif event.type == QUIT:
-                running = False
-
-        screen.blit(background, (0, 0))
-
-        pressed_keys = pygame.key.get_pressed()
-        player.update(pressed_keys)
-
-        if random.randrange(0, 5000) > 4000:
-            if random.randrange(1, 3) == 1:
-                asv = Enemy()
-                enemies_sprites.add(asv)
-                all_sprites.add(asv)
-                counter = 0
-            else:
-                asv = FlyingEnemy()
-                enemies_sprites.add(asv)
-                all_sprites.add(asv)
-                counter = 0
-
-        for one in enemies_sprites:
-            one.update()
-
-        
-        scoreboard = pygame.font.Font(None, 60)
-        scoreboard.set_bold(True)
-        text = scoreboard.render(str(score), True, (255, 255, 255))
-        screen.blit(text, (350, 50))
-
-        finish = time.time()
-        time.sleep(max(0, 0.01666666 - (finish - start)))
-
-        if pygame.sprite.spritecollideany(player, enemies_sprites):
-            player.kill()
-            pygame.font.init()
-
-            gameover = pygame.font.Font(None, 60)
-            gameover.set_bold(True)
-            text = gameover.render("YOU SOCUK", True, (255, 255, 255))
-            screen.blit(text, (200, 200))
-            pygame.display.flip()
-            time.sleep(2)
-            break
-        pygame.display.flip()
-        """
