@@ -129,8 +129,6 @@ def main():
         time.sleep(max(0, 0.01666666 - (finish - start)))
 
 
-# Все что выше меня устраивает
-
 class Player(ImgObj):
     def __init__(self):
         super(Player, self).__init__("img/Game/Hero/Run/1.png", scale=(75, 75), position=(-150, 450), colorkey=-1)
@@ -182,6 +180,9 @@ class Player(ImgObj):
                         self.acceleration_y = 1
             elif event.type == QUIT:
                 exit(0)
+
+
+# Все что выше меня устраивает
 
 
 class Enemy(pygame.sprite.Sprite):
