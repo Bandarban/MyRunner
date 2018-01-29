@@ -3,6 +3,7 @@ import pygame.display
 from pygame.locals import *
 import random
 import methods
+import time
 
 
 class ImgObj(pygame.sprite.Sprite):
@@ -57,9 +58,9 @@ class Menu:
     menu_state = {"Start": True, "First Time": True}
 
     def __init__(self):
-        self.background = ImgObj('img/menu-bg.jpg', scale=(800, 600))
-        self.start_btn = ImgObj('img/Start-selected.png', position=(75, 200))
-        self.exit_btn = ImgObj('img/Exit.png', position=(75, 300))
+        self.background = ImgObj('img/Menu/menu-bg.jpg', scale=(800, 600))
+        self.start_btn = ImgObj('img/Menu/Start-selected.png', position=(75, 200))
+        self.exit_btn = ImgObj('img/Menu/Exit.png', position=(75, 300))
         self.sprite_list.append(self.background)
         self.sprite_list.append(self.start_btn)
         self.sprite_list.append(self.exit_btn)
@@ -67,12 +68,13 @@ class Menu:
     def update(self):
         self.listener()
         if self.menu_state["Start"]:
-            self.start_btn.surface, self.start_btn.rect = methods.load_image("img/Start-selected.png",
+            self.start_btn.surface, self.start_btn.rect = methods.load_image("img/Menu/Start-selected.png",
                                                                              position=(75, 200))
-            self.exit_btn.surface, self.exit_btn.rect = methods.load_image("img/Exit.png", position=(75, 300))
+            self.exit_btn.surface, self.exit_btn.rect = methods.load_image("img/Menu/Exit.png", position=(75, 300))
         else:
-            self.start_btn.surface, self.start_btn.rect = methods.load_image("img/Start.png", position=(75, 200))
-            self.exit_btn.surface, self.exit_btn.rect = methods.load_image("img/Exit_selected.png", position=(75, 300))
+            self.start_btn.surface, self.start_btn.rect = methods.load_image("img/Menu/Start.png", position=(75, 200))
+            self.exit_btn.surface, self.exit_btn.rect = methods.load_image("img/Menu/Exit_selected.png",
+                                                                           position=(75, 300))
 
     def listener(self):
         for event in pygame.event.get():
@@ -98,10 +100,10 @@ class Game:
     sprite_list = []
 
     def __init__(self):
-        self.game_background = ImgObj("img/game_bg.png", scale=(952, 600))
+        self.game_background = ImgObj("img/Game/game_bg.png", scale=(952, 600))
         self.hero = Player()
         self.hero.rect.move(50, 450)
-        self.enemy = Enemy()
+        # self.enemy = Enemy()
         self.sprite_list.append(self.game_background)
         self.sprite_list.append(self.hero)
         # self.all_sprites.append(self.enemy)
@@ -118,28 +120,44 @@ class Game:
 def main():
     State.init()
     while True:
+        start = time.time()
         State.update()
         State.render()
+        finish = time.time()
+        time.sleep(max(0, 0.01666666 - (finish - start)))
 
 
 # Все что выше меня устраивает
 
 class Player(ImgObj):
     def __init__(self):
-        super(Player, self).__init__("img/hero.jpg", scale=(75, 75), position=(50, 450))
+        super(Player, self).__init__("img/Game/Hero/Run/1.png", scale=(75, 75), position=(-150, 450), colorkey=-1)
         self.jmp = False  # in air
         self.grounded = True  # in ground
         self.acceleration_y = 1
+        self.velocity_x = 2
+        self.run_sprites = []
+        for i in range(1, 8):
+            self.run_sprites.append(
+                (methods.load_image("img/Game/Hero/Run/" + str(i) + ".png", colorkey=-1, scale=1)))
+        self.animations = 0
 
     def updater(self):
         self.listener()
+        if self.rect.left >= 100:
+            self.rect.left = 100
+            self.velocity_x = 0
         if self.grounded:
+            self.surface, dontchange = self.run_sprites[self.animations//5]
+            self.animations += 1
+            self.animations = self.animations % 35
             self.acceleration_y = 0
             self.velocity_y = 0
-        if self.rect.bottom > 500:
+        if self.rect.bottom > 530:
             self.jmp = False
             self.grounded = True
-            self.rect.bottom = 500
+            self.animations = 0
+            self.rect.bottom = 530
             self.velocity_y = 0
         self.update()
 
