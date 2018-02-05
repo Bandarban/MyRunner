@@ -18,13 +18,13 @@ class ImgObj(pygame.sprite.Sprite):
         self.velocity_x = 0
         self.velocity_y = 0
 
-    def update(self):
+    def move(self):
         self.velocity_x += self.acceleration_x
         self.velocity_y += self.acceleration_y
         self.rect.move_ip(self.velocity_x, self.velocity_y)
 
-    def updater(self):
-        pass
+    def update(self):
+        self.move()
 
 
 class State:
@@ -100,19 +100,23 @@ class Game:
     sprite_list = []
 
     def __init__(self):
-        self.game_background = ImgObj("img/Game/game_bg.png", scale=(952, 600))
+        self.game_background = ImgObj("img/Game/World/game_bg.png", scale=(1000, 600))
+        self.sprite_list.append(self.game_background)
         self.hero = Player()
         self.hero.rect.move(50, 450)
-        # self.enemy = Enemy()
-        self.sprite_list.append(self.game_background)
         self.sprite_list.append(self.hero)
+
+        tmp = (700, 510)
+        for i in range(11):
+            self.sprite_list.append(GroundBlock(tmp))
+            tmp = tmp[0] - 88, tmp[1]
+        # self.enemy = Enemy()
         # self.all_sprites.append(self.enemy)
 
     def update(self):
-        if self.game_background.rect.right > 800:
-            self.game_background.rect.move_ip(-1, 0)
+
         for sprite in self.sprite_list:
-            sprite.updater()
+            sprite.update()
 
     def render(self):
         for sprite in self.sprite_list:
@@ -126,7 +130,18 @@ def main():
         State.update()
         State.render()
         finish = time.time()
-        time.sleep(max(0, 0.01666666 - (finish - start)))
+        time.sleep(max(0, 0.0166666 - (finish - start)))
+
+
+class GroundBlock(ImgObj):
+    def __init__(self, position):
+        super(GroundBlock, self).__init__("img/Game/World/ground_block.png", scale=(100, 100), position=position)
+        self.velocity_x = -7
+
+    def update(self):
+        self.move()
+        if self.rect.right < -10:
+            self.rect.move_ip(900, 0)
 
 
 class Player(ImgObj):
@@ -141,21 +156,27 @@ class Player(ImgObj):
         for i in range(1, 8):
             self.run_sprites.append(
                 (methods.load_image("img/Game/Hero/Run/" + str(i) + ".png", colorkey=-1, scale=(2.2, None))))
+
+        # self.run_sprites.extend(reversed(self.run_sprites))
         for i in range(1, 4):
             self.fly_sprites.append(
                 methods.load_image("img/Game/Hero/Jump/" + str(i) + ".png", colorkey=-1, scale=(2.2, None)))
         self.counter = 0
 
-    def updater(self):
-        self.counter += 1
+    def update(self):
+        self.counter = (self.counter + 1)
         self.listener()
         if self.rect.left >= 100:
             self.rect.left = 100
             self.velocity_x = 0
-        if self.grounded:
-            self.surface, Null = self.run_sprites[self.counter % 35 // 5]
-            self.acceleration_y = 0
-            self.velocity_y = 0
+        try:
+            if self.grounded:
+                self.surface, Null = self.run_sprites[self.counter // 5 % 7]
+                self.acceleration_y = 0
+                self.velocity_y = 0
+        except:
+            print(self.counter)
+            exit(0)
         if self.jmp:
             self.surface, Null = self.fly_sprites[1]
 
@@ -165,7 +186,7 @@ class Player(ImgObj):
             self.counter = 0
             self.rect.bottom = 530
             self.velocity_y = 0
-        self.update()
+        self.move()
 
     def listener(self):
         for event in pygame.event.get():
